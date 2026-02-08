@@ -1,0 +1,5 @@
+pandas
+datasets
+pyarrow
+psycopg2-binary
+sqlalchemy
