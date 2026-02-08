@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: root
       POSTGRES_DB: ny_taxi
     ports:
-      - "5434:5432"
+      - "5435:5432"
 
   pgadmin:
     image: dpage/pgadmin4
@@ -39,14 +39,14 @@ services:
     image: apache/airflow:2.7.1
     container_name: airflow
     environment:
-      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
-      AIRFLOW__CORE__EXECUTOR: "SequentialExecutor"
-      AIRFLOW__CORE__FERNET_KEY: "YOUR_RANDOM_FERNET_KEY"
-      AIRFLOW__CORE__DAGS_FOLDER: "/opt/airflow/dags"
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "sqlite:////opt/airflow/airflow.db"
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+      # --- ADD THIS LINE ---
+      - _PIP_ADDITIONAL_DEPENDENCIES=pandas datasets psycopg2-binary
     volumes:
-      - ./dags:/opt/airflow/dags
-      - ./data:/opt/airflow/data
+      - /workspaces/Finance-Data-Engineering/dags:/opt/airflow/dags
+      - /workspaces/Finance-Data-Engineering/data:/opt/airflow/data
     ports:
       - "8080:8080"
-    command: ["webserver"]
+    command: bash -c "airflow db init && airflow users create --username admin --firstname admin --lastname admin --role Admin --email admin@example.com --password admin && airflow webserver"
